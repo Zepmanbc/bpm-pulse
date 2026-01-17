@@ -58,7 +58,6 @@
         const container = document.getElementById("container");
         const dots = [];
 
-        // Création des points
         for (let i = 0; i < beats; i++) {
             const dot = document.createElement("div");
             dot.className = "dot";
@@ -66,28 +65,20 @@
             dots.push(dot);
         }
 
-        let current = 0;
-        let next = performance.now();
+        function tick() {
+            const now = Date.now();
 
-        function tick(now) {
-            if (now >= next) {
-                // Éteint tous les points
-                dots.forEach(d => d.classList.remove("on"));
+            const step = Math.floor(now / interval);
+            const current = step % beats;
 
-                // Allume le point courant
-                dots[current].classList.add("on");
-
-                // Passe au suivant
-                current = (current + 1) % beats;
-
-                // Prochain tick
-                next += interval;
-            }
+            dots.forEach(d => d.classList.remove("on"));
+            dots[current].classList.add("on");
 
             requestAnimationFrame(tick);
         }
 
         requestAnimationFrame(tick);
+
 
 
     </script>
