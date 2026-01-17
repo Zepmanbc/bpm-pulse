@@ -5,19 +5,37 @@
     <title>Pulse BPM</title>
     <style>
         body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #container {
+            display: flex;
+            gap: 24px;
+        }
+
+        .dot {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #333;
+            transition: background 0.08s, transform 0.08s;
+        }
+
+        .dot.on {
+            background: #00ff66;
+            transform: scale(1.2);
         }
 
         #pulse {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: #333;
-        transition: background 0.08s;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #333;
+            transition: background 0.08s;
         }
 
         #pulse.on {
@@ -26,27 +44,51 @@
     </style>
     </head>
     <body>
-    <div id="pulse" class="on"></div>
+    <div id="container"></div>
 
     <script>
+
         const params = new URLSearchParams(window.location.search);
+
         const bpm = Number(params.get("bpm")) || 120;
+        const beats = Number(params.get("beats")) || 4;
 
         const interval = 60000 / bpm;
-        const pulse = document.getElementById("pulse");
 
+        const container = document.getElementById("container");
+        const dots = [];
+
+        // Création des points
+        for (let i = 0; i < beats; i++) {
+            const dot = document.createElement("div");
+            dot.className = "dot";
+            container.appendChild(dot);
+            dots.push(dot);
+        }
+
+        let current = 0;
         let next = performance.now();
 
         function tick(now) {
-        if (now >= next) {
-            pulse.classList.add("on");
-            setTimeout(() => pulse.classList.remove("on"), interval * 0.15);
-            next += interval;
-        }
-        requestAnimationFrame(tick);
+            if (now >= next) {
+                // Éteint tous les points
+                dots.forEach(d => d.classList.remove("on"));
+
+                // Allume le point courant
+                dots[current].classList.add("on");
+
+                // Passe au suivant
+                current = (current + 1) % beats;
+
+                // Prochain tick
+                next += interval;
+            }
+
+            requestAnimationFrame(tick);
         }
 
         requestAnimationFrame(tick);
+
 
     </script>
 </body>
